@@ -10,7 +10,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.awt.*;
+import java.net.*;
 
 public class Main extends Application {
 
@@ -31,6 +33,8 @@ public class Main extends Application {
     public TextArea Area_Chat;
     public TextArea Area_Text;
 
+    public TextField username;
+
 
 
     @Override
@@ -49,6 +53,62 @@ public class Main extends Application {
 
     public void Button_send_Chat()
     {
+
+        if(Remote_Port.getText().equals("") && Remote_IP.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "please enter port number and ip address for remote");
+
+
+        }
+        else{
+
+
+            try {
+
+
+                int po = Integer.parseInt(Remote_Port.getText());
+                InetSocketAddress add = new InetSocketAddress(Remote_IP.getText(),po);
+
+                byte[] sendData = new byte[1024];
+                if(username.getText().equals("")){
+                    String sent=Local_Port.getText().toString()+">>"+Area_Text.getText();
+                    sendData = sent.getBytes();
+                }
+                else{
+                    String sent=username.getText().toString()+">>"+Area_Text.getText();
+                    sendData = sent.getBytes();
+
+                }
+
+
+
+
+
+                DatagramPacket sendPacket =
+                        new DatagramPacket(sendData, sendData.length);
+
+                sendPacket.setSocketAddress(add);
+                clientSocket.send(sendPacket);
+
+
+                Style style = data.addStyle("", null);
+                StyleConstants.setForeground(style, Color.red);
+
+                StyledDocument doc =data.getStyledDocument();
+                doc.insertString(doc.getLength(), "you"+">>"+msg.getText()+"\n", style);
+
+
+
+                msg.setText("");
+
+                JOptionPane.showMessageDialog(null, "تم الارسال");
+
+
+
+
+
+            }   catch (Exception ex) {
+                Logger.getLogger(ptop.class.getName()).log(Level.SEVERE, null, ex);
+            } }
         TCP_Server_IP.setText("dcd");
         UDP_Client Client = new UDP_Client();
         UDP_Server Server = new UDP_Server();
