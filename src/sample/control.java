@@ -29,6 +29,7 @@ public class control {
     public TextField Remote_Port = new TextField();
     public TextField Status = new TextField();
     public TextField Username = new TextField();
+    public TextField Remote_Port1 =new TextField();
 
     //Button send
     public Button Send = new Button();
@@ -50,10 +51,11 @@ public class control {
     public ObservableList<String> options1 = FXCollections.observableArrayList();
 
 
+
     public void initialing() throws IOException {
         Stage primaryStage = new Stage();
         Parent root = FXMLLoader.load(getClass().getResource("Interface.fxml"));
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("Chatting");
         primaryStage.setScene(new Scene(root, 850, 560));
         primaryStage.show();
 
@@ -109,14 +111,32 @@ public class control {
                 int po = Integer.parseInt(Remote_Port.getText());
                 InetSocketAddress add = new InetSocketAddress(Remote_IP.getText(), po);
                 byte[] sendData = new byte[1024];
-                String sent = Username.getText() + ">>" + Area_Text.getText();
+                String sent = "";
+                if(!Username.getText().equals("")) {
+                    sent= Username.getText() + ">>" + Area_Text.getText();
+                }
+                else
+                {
+                     sent = Local_Port.getText() + ">>" + Area_Text.getText();
+                }
                 sendData = sent.getBytes();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length);
                 sendPacket.setSocketAddress(add);
                 clientSocket.send(sendPacket);
-                Area_Chat.appendText(Username.getText()+">>"+Area_Text.getText()+"\n");
-                Area_Text.setText("");
-                JOptionPane.showMessageDialog(null, "Message has been sent");
+
+                if(!Username.getText().equals(""))
+                {
+                    Area_Chat.appendText(Username.getText()+">>"+Area_Text.getText()+"\n");
+                    Area_Text.setText("");
+                    JOptionPane.showMessageDialog(null, "Message has been sent");
+                }
+                else
+                {
+                    Area_Chat.appendText(Local_Port.getText()+">>"+Area_Text.getText()+"\n");
+                    Area_Text.setText("");
+                    JOptionPane.showMessageDialog(null, "Message has been sent");
+                }
+
 
             } catch (Exception ex) { ex.printStackTrace();}
         }
@@ -155,39 +175,44 @@ public class control {
 
     public void Send_To_Group()
     {
-        array.add(55);
-        array.add(66);
+        int po;
         byte[] sendData = new byte[1024];
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length);
-     for(int i =0 ; i< 1 ; i++) {
-
-         try {
-
-             System.out.println(array.get(i));
-             int po = (int) array.get(i);
-             InetSocketAddress add = new InetSocketAddress(Remote_IP.getText(), po);
+        String sent = "";
+        InetSocketAddress add;
+        DatagramPacket sendPacket;
+        String c = "";
+        array.add(Remote_Port.getText());
+        array.add(Remote_Port1.getText());
 
 
-             String sent = Local_Port.getText().toString() + ">>" + Area_Text.getText();
-             sendData = sent.getBytes();
-             sendPacket.setData(sendData);
+        if(Username.getText().equals(""))
+        {
+            Area_Chat.appendText("you" + ">>" + Area_Text.getText() + "\n");
+        }
+        else
+        {
+            Area_Chat.appendText(Username.getText() + ">>" + Area_Text.getText() + "\n");
 
+        }
 
-             sendPacket.setSocketAddress(add);
-             clientSocket.send(sendPacket);
-         } catch (Exception ex) {
-         }
-     }
+        for (int i = 0; i < 2; i++)
+        {
+            try {
+                po = Integer.parseInt(String.valueOf(array.get(i)));
+                add = new InetSocketAddress(Remote_IP.getText(), po);
+                sent = Local_Port.getText().toString() + ">>" + Area_Text.getText();
+                sendData = sent.getBytes();
+                sendPacket = new DatagramPacket(sendData, sendData.length);
+                sendPacket.setSocketAddress(add);
+                clientSocket.send(sendPacket);
 
-             Area_Chat.appendText("you"+">>"+Area_Text.getText()+"\n");
-
-             Area_Text.setText("");
-
-             JOptionPane.showMessageDialog(null, "send to all user");
-
-
-
-         }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        Area_Text.setText("");
+        JOptionPane.showMessageDialog(null, "send to all user");
+    }
 
     public void setIP_List() throws SocketException {
         comboBox.getItems().clear();
