@@ -1,11 +1,16 @@
-package sample;
+package TCP;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 public class Main extends Application {
 
-    private control co = new control();
+    private Control_TCP co = new Control_TCP();
+
+    public Main() throws IOException {
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
